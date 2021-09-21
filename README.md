@@ -11,7 +11,7 @@
     </tr>
 </table>
 <h2 align="left">PROJECT DESCRIPTION</h2>
-This toolbox is actually a toolkit grouping several methods used in the NSLBP-BIO project.
+This toolbox is actually a toolkit grouping several methods used in the PATH-SIMU project.
 
 </h2>
 
@@ -34,7 +34,7 @@ This toolbox is actually a toolkit grouping several methods used in the NSLBP-BI
 [**License**](#license)
 
 ## Installation
-You just need to download or clone the project to use it. Just ensure that you are using Matlab R2018b or newer (The Mathworks, USA).
+You just need to download or clone the project to use it. Just ensure that you are using Matlab R2019b or newer (The Mathworks, USA).
 
 ## Features
 To be defined.
