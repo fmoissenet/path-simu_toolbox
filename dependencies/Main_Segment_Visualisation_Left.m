@@ -1,0 +1,194 @@
+% MAIN PROGRAM
+% Main_Segment_Visualisation.m
+%__________________________________________________________________________
+%
+% PURPOSE
+% Plotting of segment features
+%
+% SYNOPSIS
+% N/A (i.e., main program)
+%
+% DESCRIPTION
+% Plotting of segment axes (u, w), endpoints (rP, rD) and markers (rM)
+% (cf. data structure in user guide)
+%__________________________________________________________________________
+%
+% CALLED FUNCTIONS (FROM 3D INVERSE DYNAMICS TOOLBOX) 
+% Mprod_array3.m
+% Q2Tu_array3.m
+% 
+% MATLAB VERSION
+% Matlab R2007b
+%__________________________________________________________________________
+%
+% CHANGELOG
+% Created by Rapha�l Dumas
+% March 2010
+%__________________________________________________________________________
+
+function [] = Main_Segment_Visualisation_Left(Segment,frames)
+
+% Figure
+figure;
+hold on;
+axis equal;
+
+% ICS
+quiver3(0,0,0,1,0,0,0.5,'k');
+quiver3(0,0,0,0,1,0,0.5,'k');
+quiver3(0,0,0,0,0,1,0.5,'k');
+
+% Frames of interest
+n = length(Segment(2).rM(1,1,:));
+ni = frames;
+
+% Forceplate (or wheel)
+% Proximal enpoint P: centre of pressure
+P0x=(permute(Segment(6).Q(4,1,ni),[3,2,1]));
+P0y=(permute(Segment(6).Q(5,1,ni),[3,2,1]));
+P0z=(permute(Segment(6).Q(6,1,ni),[3,2,1]));
+plot3(P0x,P0y,P0z,'ok');
+
+% Foot (or hand)
+% Proximal enpoint Pt
+P1x=(permute(Segment(7).Q(4,1,ni),[3,2,1]));
+P1y=(permute(Segment(7).Q(5,1,ni),[3,2,1]));
+P1z=(permute(Segment(7).Q(6,1,ni),[3,2,1]));
+plot3(P1x,P1y,P1z,'ob');
+% Distal endpoints D
+D1x=(permute(Segment(7).Q(7,1,ni),[3,2,1]));
+D1y=(permute(Segment(7).Q(8,1,ni),[3,2,1]));
+D1z=(permute(Segment(7).Q(9,1,ni),[3,2,1]));
+plot3(D1x,D1y,D1z,'.b');
+plot3([P1x,D1x]',[P1y,D1y]',[P1z,D1z]','b');
+% U axis
+U1x=(permute(Segment(7).Q(1,1,ni), [3,2,1]));
+U1y=(permute(Segment(7).Q(2,1,ni), [3,2,1]));
+U1z=(permute(Segment(7).Q(3,1,ni), [3,2,1]));
+quiver3(P1x,P1y,P1z,U1x,U1y,U1z,0.5,'b');
+% W axis
+W1x=(permute(Segment(7).Q(10,1,ni),[3,2,1]));
+W1y=(permute(Segment(7).Q(11,1,ni),[3,2,1]));
+W1z=(permute(Segment(7).Q(12,1,ni),[3,2,1]));
+quiver3(D1x,D1y,D1z,W1x,W1y,W1z,0.5,'b');
+% Markers
+for j = 1:size(Segment(7).rM,2)
+    plot3(permute(Segment(7).rM(1,j,ni),[3,2,1]),...
+        permute(Segment(7).rM(2,j,ni),[3,2,1]),...
+        permute(Segment(7).rM(3,j,ni),[3,2,1]),'+b');
+end
+% % Centre of mass
+% G1 = Mprod_array3(Q2Tu_array3(Segment(7).Q),...
+%     repmat([Segment(7).rCs;1],[1 1 n]));
+% G1x=(permute(G1(1,1,ni),[3,2,1]));
+% G1y=(permute(G1(2,1,ni),[3,2,1]));
+% G1z=(permute(G1(3,1,ni),[3,2,1]));
+% plot3(G1x,G1y,G1z,'*b');
+
+% Leg (or forearm)
+% Proximal enpoint P
+P2x=(permute(Segment(8).Q(4,1,ni),[3,2,1]));
+P2y=(permute(Segment(8).Q(5,1,ni),[3,2,1]));
+P2z=(permute(Segment(8).Q(6,1,ni),[3,2,1]));
+plot3(P2x,P2y,P2z, 'or' );
+% Distal endpoints D
+D2x=(permute(Segment(8).Q(7,1,ni),[3,2,1]));
+D2y=(permute(Segment(8).Q(8,1,ni),[3,2,1]));
+D2z=(permute(Segment(8).Q(9,1,ni),[3,2,1]));
+plot3(D2x,D2y,D2z, '.r' );
+plot3([P2x,D2x]',[P2y,D2y]',[P2z,D2z]','r');
+% U axis
+U2x=(permute(Segment(8).Q(1,1,ni), [3,2,1]));
+U2y=(permute(Segment(8).Q(2,1,ni), [3,2,1]));
+U2z=(permute(Segment(8).Q(3,1,ni), [3,2,1]));
+quiver3(P2x,P2y,P2z,U2x,U2y,U2z,0.5,'r');
+% W axis
+W2x=(permute(Segment(8).Q(10,1,ni),[3,2,1]));
+W2y=(permute(Segment(8).Q(11,1,ni),[3,2,1]));
+W2z=(permute(Segment(8).Q(12,1,ni),[3,2,1]));
+quiver3(D2x,D2y,D2z,W2x,W2y,W2z,0.5,'r');
+% Markers
+for j = 1:size(Segment(8).rM,2)
+    plot3(permute(Segment(8).rM(1,j,ni),[3,2,1]),...
+        permute(Segment(8).rM(2,j,ni),[3,2,1]),...
+        permute(Segment(8).rM(3,j,ni),[3,2,1]),'+r');
+end
+% % Centre of mass
+% G2 = Mprod_array3(Q2Tu_array3(Segment(8).Q),...
+%     repmat([Segment(8).rCs;1],[1 1 n]));
+% G2x=(permute(G2(1,1,ni),[3,2,1]));
+% G2y=(permute(G2(2,1,ni),[3,2,1]));
+% G2z=(permute(G2(3,1,ni),[3,2,1]));
+% plot3(G2x,G2y,G2z,'*r');
+
+% Thigh (or arm)
+% Proximal enpoint P
+P3x=(permute(Segment(9).Q(4,1,ni),[3,2,1]));
+P3y=(permute(Segment(9).Q(5,1,ni),[3,2,1]));
+P3z=(permute(Segment(9).Q(6,1,ni),[3,2,1]));
+plot3(P3x,P3y,P3z,'oc');
+% Distal endpoints D
+D3x=(permute(Segment(9).Q(7,1,ni), [3,2,1]));
+D3y=(permute(Segment(9).Q(8,1,ni), [3,2,1]));
+D3z=(permute(Segment(9).Q(9,1,ni), [3,2,1]));
+plot3(D3x,D3y,D3z,'.c');
+plot3([P3x,D3x]',[P3y,D3y]',[P3z,D3z]','c');
+% U axis
+U3x=(permute(Segment(9).Q(1,1,ni), [3,2,1]));
+U3y=(permute(Segment(9).Q(2,1,ni), [3,2,1]));
+U3z=(permute(Segment(9).Q(3,1,ni), [3,2,1]));
+quiver3(P3x,P3y,P3z,U3x,U1y,U3z,0.5,'c');
+% W axis
+W3x=(permute(Segment(9).Q(10,1,ni), [3,2,1]));
+W3y=(permute(Segment(9).Q(11,1,ni), [3,2,1]));
+W3z=(permute(Segment(9).Q(12,1,ni), [3,2,1]));
+quiver3(D3x,D3y,D3z,W3x,W3y,W3z,0.5,'c');
+% Markers
+for j = 1:size(Segment(9).rM,2)
+    plot3(permute(Segment(9).rM(1,j,ni),[3,2,1]),...
+        permute(Segment(9).rM(2,j,ni),[3,2,1]),...
+        permute(Segment(9).rM(3,j,ni),[3,2,1]),'+c');
+end
+% % Centre of mass
+% G3 = Mprod_array3(Q2Tu_array3(Segment(9).Q),...
+%     repmat([Segment(9).rCs;1],[1 1 n]));
+% G3x=(permute(G3(1,1,ni),[3,2,1]));
+% G3y=(permute(G3(2,1,ni),[3,2,1]));
+% G3z=(permute(G3(3,1,ni),[3,2,1]));
+% plot3(G3x,G3y,G3z,'*c');
+
+% Pelvis (or thorax)
+% Proximal enpoint P
+P4x=(permute(Segment(10).Q(4,1,ni), [3,2,1]));
+P4y=(permute(Segment(10).Q(5,1,ni), [3,2,1]));
+P4z=(permute(Segment(10).Q(6,1,ni), [3,2,1]));
+plot3(P4x,P4y,P4z,'om');
+% Distal endpoints D
+D4x=(permute(Segment(10).Q(7,1,ni), [3,2,1]));
+D4y=(permute(Segment(10).Q(8,1,ni), [3,2,1]));
+D4z=(permute(Segment(10).Q(9,1,ni), [3,2,1]));
+plot3(D4x,D4y,D4z,'.m');
+plot3([P4x,D4x]',[P4y,D4y]',[P4z,D4z]','m');
+% U axis
+U4x=(permute(Segment(10).Q(1,1,ni), [3,2,1]));
+U4y=(permute(Segment(10).Q(2,1,ni), [3,2,1]));
+U4z=(permute(Segment(10).Q(3,1,ni), [3,2,1]));
+quiver3(P4x,P4y,P4z,U4x,U4y,U4z,0.5,'m');
+% W axis
+W4x=(permute(Segment(10).Q(10,1,ni), [3,2,1]));
+W4y=(permute(Segment(10).Q(11,1,ni), [3,2,1]));
+W4z=(permute(Segment(10).Q(12,1,ni), [3,2,1]));
+quiver3(D4x,D4y,D4z,W4x,W4y,W4z,0.5,'m');
+% Markers
+for j = 1:size(Segment(10).rM,2)
+    plot3(permute(Segment(10).rM(1,j,ni),[3,2,1]),...
+        permute(Segment(10).rM(2,j,ni),[3,2,1]),...
+        permute(Segment(10).rM(3,j,ni),[3,2,1]),'+m');
+end
+% % Centre of mass
+% G4 = Mprod_array3(Q2Tu_array3(Segment(10).Q),...
+%     repmat([Segment(10).rCs;1],[1 1 n]));
+% G4x=(permute(G4(1,1,ni),[3,2,1]));
+% G4y=(permute(G4(2,1,ni),[3,2,1]));
+% G4z=(permute(G4(3,1,ni),[3,2,1]));
+% plot3(G4x,G4y,G4z,'*m');
