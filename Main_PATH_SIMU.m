@@ -29,9 +29,9 @@ clc;
 % SET FOLDERS
 % -------------------------------------------------------------------------
 disp('Set folders');
-Folder.toolbox      = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\';
-Folder.data         = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\';
-Folder.export       = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\output\';
+Folder.toolbox      = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\';
+Folder.data         = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\';
+Folder.export       = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\output\';
 Folder.dependencies = [Folder.toolbox,'dependencies\'];
 addpath(Folder.toolbox);
 addpath(genpath(Folder.dependencies));
