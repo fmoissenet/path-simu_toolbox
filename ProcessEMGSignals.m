@@ -34,8 +34,7 @@ for i = 1:size(Trial.EMG,2)
         % -----------------------------------------------------------------
         % ZEROING AND FILTER EMG SIGNAL
         % -----------------------------------------------------------------
-        Trial.EMG(i).Signal.filt = Trial.EMG(i).Signal.filt-nanmean(Trial.EMG(i).Signal.filt,3);
-        
+        Trial.EMG(i).Signal.filt = Trial.EMG(i).Signal.filt-mean(Trial.EMG(i).Signal.filt,3,'omitnan');
         % Method 1: No filtering
         if strcmp(fmethod.type,'none')
             Trial.EMG(i).Signal.filt     = Trial.EMG(i).Signal.filt;
