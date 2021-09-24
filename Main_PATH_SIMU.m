@@ -191,9 +191,9 @@ for i = 1:size(Trial,2)
     Trial(i).Segment(1).Q(4:6,:,:) = Trial(i).GRF(1).Signal.P.smooth; % Right foot CoP
     Trial(i).Segment(6).Q(4:6,:,:) = Trial(i).GRF(2).Signal.P.smooth; % Left foot CoP
     Trial(i).Joint(1).F            = Trial(i).GRF(1).Signal.F.smooth;
-    Trial(i).Joint(2).F            = Trial(i).GRF(2).Signal.F.smooth;
+    Trial(i).Joint(6).F            = Trial(i).GRF(2).Signal.F.smooth;
     Trial(i).Joint(1).M            = Trial(i).GRF(1).Signal.M.smooth;
-    Trial(i).Joint(2).M            = Trial(i).GRF(2).Signal.M.smooth;
+    Trial(i).Joint(6).M            = Trial(i).GRF(2).Signal.M.smooth;
     clear GRF fmethod smethod;
         
 end
