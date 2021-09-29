@@ -209,3 +209,9 @@ frames  = Trial(1).Event(1).value(2):Trial(1).Event(1).value(3);
 Main_Segment_Visualisation_Right(Segment,frames);
 frames  = Trial(1).Event(2).value(2):Trial(1).Event(2).value(3);
 Main_Segment_Visualisation_Left(Segment,frames);
+
+% -------------------------------------------------------------------------
+% DATA EXTRACTION as .mat file for the MSK_TLEM2_UHS_Min_f model
+% -------------------------------------------------------------------------
+delete C3D_Data_Extraction.mat
+save('C3D_Data_Extraction', 'Segment', 'Joint', '-struct','Trial', 'n1', 'fmarker', 'Event','GRF')
