@@ -214,4 +214,4 @@ Main_Segment_Visualisation_Left(Segment,frames);
 % DATA EXTRACTION as .mat file for the MSK_TLEM2_UHS_Min_f model
 % -------------------------------------------------------------------------
 delete C3D_Data_Extraction.mat
-save('C3D_Data_Extraction', '-struct', 'Segment', 'Joint','Trial', 'n1', 'fmarker', 'Event','GRF')
+save('C3D_Data_Extraction', '-struct', 'Trial', 'Segment', 'Joint', 'n1', 'fmarker', 'Event','GRF')
