@@ -29,9 +29,9 @@ clc;
 % SET FOLDERS
 % -------------------------------------------------------------------------
 disp('Set folders');
-Folder.toolbox      = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\';
-Folder.data         = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\';
-Folder.export       = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\output\';
+Folder.toolbox      = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\';
+Folder.data         = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\';
+Folder.export       = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\output\';
 Folder.dependencies = [Folder.toolbox,'dependencies\'];
 addpath(Folder.toolbox);
 addpath(genpath(Folder.dependencies));
@@ -43,6 +43,7 @@ cd(Folder.toolbox);
 disp('Set participant parameters');
 Participant.id           = 'Test';
 Participant.gender       = 'Female'; % Female / Male
+Participant.implantSide  = 'left';
 
 % -------------------------------------------------------------------------
 % DEFINE SESSION
@@ -51,8 +52,8 @@ disp('Set session parameters');
 Session.date              = '';
 Session.type              = '';
 Session.examiner          = '';
-Session.participantHeight = []; % cm
-Session.participantWeight = []; % kg
+Session.participantHeight = 163; % cm
+Session.participantWeight = 62; % kg
 Session.markerHeight      = 0.014; % m
 
 % -------------------------------------------------------------------------
@@ -161,6 +162,7 @@ for i = 1:size(Trial,2)
     Trial(i)         = InitialiseJoints(Trial(i));
     if isempty(strfind(Trial(i).type,'Endurance'))
         Trial(i)            = DefineSegments(Participant,Static,Trial(i));
+        Trial(i)            = DefineInertialParameters(Trial(i),Participant,Session)
         Trial(i)            = ComputeKinematics(Trial(i),2,5); % Right lower limb kinematic chain
         Trial(i)            = ComputeKinematics(Trial(i),7,10); % Left lower limb kinematic chain
         Trial(i).Segment(5) = Trial(i).Segment(10); % Double pelvis segment for indices coherence
@@ -190,8 +192,8 @@ for i = 1:size(Trial,2)
     Trial(i)                       = ProcessGRFSignals(Trial(i),GRF,steps,fmethod,smethod);
     Trial(i).Segment(1).Q(4:6,:,:) = Trial(i).GRF(1).Signal.P.smooth; % Right foot CoP
     Trial(i).Segment(6).Q(4:6,:,:) = Trial(i).GRF(2).Signal.P.smooth; % Left foot CoP
-    Trial(i).Joint(1).F            = Trial(i).GRF(1).Signal.F.smooth;
-    Trial(i).Joint(6).F            = Trial(i).GRF(2).Signal.F.smooth;
+    Trial(i).Joint(1).F            = -Trial(i).GRF(1).Signal.F.smooth;
+    Trial(i).Joint(6).F            = -Trial(i).GRF(2).Signal.F.smooth;
     Trial(i).Joint(1).M            = Trial(i).GRF(1).Signal.M.smooth;
     Trial(i).Joint(6).M            = Trial(i).GRF(2).Signal.M.smooth;
     clear GRF fmethod smethod;
@@ -203,15 +205,67 @@ clear i j;
 % EXAMPLE: SEGMENT VISUALISATION DURING CYCLES OF INTEREST
 % (with feet on forceplates)
 % -------------------------------------------------------------------------
-Segment = Trial(1).Segment;
-Joint   = Trial(1).Joint;
-frames  = Trial(1).Event(1).value(2):Trial(1).Event(1).value(3);
-Main_Segment_Visualisation_Right(Segment,frames);
-frames  = Trial(1).Event(2).value(2):Trial(1).Event(2).value(3);
-Main_Segment_Visualisation_Left(Segment,frames);
+% Right
+frames = Trial(1).Event(1).value(2):Trial(1).Event(1).value(3);
+n      = length(frames);
+f      = Trial(1).fmarker;
+weight = Session.participantWeight;
+height = Session.participantHeight;
+for s = 1:5
+    if s == 1
+        Segment(s).rM    = [];  
+        Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames); 
+        Segment(s).m     = [];
+        Segment(s).rCs   = [];
+        Segment(s).Is    = [];   
+    else
+        Segment(s).rM    = Trial(1).Segment(s).rM(:,:,frames);
+        Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames);
+        Segment(s).m     = Trial(1).Segment(s).m;
+        Segment(s).rCs   = Trial(1).Segment(s).rCs;
+        Segment(s).Is    = Trial(1).Segment(s).Is;
+    end
+end
+for j = 1:4
+    if j == 1
+        Joint(j).F     = Trial(1).Joint(j).F(:,:,frames);
+        Joint(j).M     = Trial(1).Joint(j).M(:,:,frames);
+    else
+        Joint(j).F     = [];
+        Joint(j).M     = [];
+    end
+end
+Main_Segment_Visualisation_Right(Segment,1:length(Segment(2).Q));
+% % Left
+% frames  = Trial(1).Event(2).value(2):Trial(1).Event(2).value(3);
+% for s = 6:10
+%     if s == 6
+%         Segment(s).rM    = [];  
+%         Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames); 
+%         Segment(s).m     = [];
+%         Segment(s).rCs   = [];
+%         Segment(s).Is    = [];    
+%     else
+%         Segment(s).rM    = Trial(1).Segment(s).rM(:,:,frames);
+%         Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames);
+%         Segment(s).m     = Trial(1).Segment(s).m;
+%         Segment(s).rCs   = Trial(1).Segment(s).rCs;
+%         Segment(s).Is    = Trial(1).Segment(s).Is;
+%     end
+% end
+% for j = 5:9
+%     if j == 1
+%         Joint(j).F     = Trial(1).Joint(j).F(:,:,frames);
+%         Joint(j).M     = Trial(1).Joint(j).M(:,:,frames);
+%     else
+%         Joint(j).F     = [];
+%         Joint(j).M     = [];
+%     end
+% end
+% Main_Segment_Visualisation_Left(Segment,1:length(Segment(7).Q));
 
 % -------------------------------------------------------------------------
 % DATA EXTRACTION as .mat file for the MSK_TLEM2_UHS_Min_f model
 % -------------------------------------------------------------------------
 delete C3D_Data_Extraction.mat
-save('C3D_Data_Extraction', '-struct', 'Trial', 'Segment', 'Joint', 'n1', 'fmarker', 'Event','GRF')
+save('C3D_Data_Extraction', 'Segment', 'Joint', 'n', 'f', 'weight', 'height')
