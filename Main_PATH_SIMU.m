@@ -29,9 +29,9 @@ clc;
 % SET FOLDERS
 % -------------------------------------------------------------------------
 disp('Set folders');
-Folder.toolbox      = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\';
-Folder.data         = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\';
-Folder.export       = 'C:\Users\moissene\OneDrive - unige.ch\2021 - PATH-SIMU\PATH-SIMU_Toolbox\data\output\';
+Folder.toolbox      = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\';
+Folder.data         = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\';
+Folder.export       = 'C:\Users\beauseroy\Documents\GitHub\path-simu_toolbox\data\output\';
 Folder.dependencies = [Folder.toolbox,'dependencies\'];
 addpath(Folder.toolbox);
 addpath(genpath(Folder.dependencies));
@@ -162,7 +162,7 @@ for i = 1:size(Trial,2)
     Trial(i)         = InitialiseJoints(Trial(i));
     if isempty(strfind(Trial(i).type,'Endurance'))
         Trial(i)            = DefineSegments(Participant,Static,Trial(i));
-        Trial(i)            = DefineInertialParameters(Trial(i),Participant,Session)
+        Trial(i)            = DefineInertialParameters(Trial(i),Participant,Session);
         Trial(i)            = ComputeKinematics(Trial(i),2,5); % Right lower limb kinematic chain
         Trial(i)            = ComputeKinematics(Trial(i),7,10); % Left lower limb kinematic chain
         Trial(i).Segment(5) = Trial(i).Segment(10); % Double pelvis segment for indices coherence
@@ -193,9 +193,9 @@ for i = 1:size(Trial,2)
     Trial(i).Segment(1).Q(4:6,:,:) = Trial(i).GRF(1).Signal.P.smooth; % Right foot CoP
     Trial(i).Segment(6).Q(4:6,:,:) = Trial(i).GRF(2).Signal.P.smooth; % Left foot CoP
     Trial(i).Joint(1).F            = -Trial(i).GRF(1).Signal.F.smooth;
-    Trial(i).Joint(6).F            = -Trial(i).GRF(2).Signal.F.smooth;
+    Trial(i).Joint(5).F            = -Trial(i).GRF(2).Signal.F.smooth;
     Trial(i).Joint(1).M            = Trial(i).GRF(1).Signal.M.smooth;
-    Trial(i).Joint(6).M            = Trial(i).GRF(2).Signal.M.smooth;
+    Trial(i).Joint(5).M            = Trial(i).GRF(2).Signal.M.smooth;
     clear GRF fmethod smethod;
         
 end
@@ -205,64 +205,93 @@ clear i j;
 % EXAMPLE: SEGMENT VISUALISATION DURING CYCLES OF INTEREST
 % (with feet on forceplates)
 % -------------------------------------------------------------------------
-% Right
-frames = Trial(1).Event(1).value(2):Trial(1).Event(1).value(3);
-n      = length(frames);
+
 f      = Trial(1).fmarker;
 weight = Session.participantWeight;
 height = Session.participantHeight;
-for s = 1:5
-    if s == 1
-        Segment(s).rM    = [];  
-        Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames); 
-        Segment(s).m     = [];
-        Segment(s).rCs   = [];
-        Segment(s).Is    = [];   
-    else
-        Segment(s).rM    = Trial(1).Segment(s).rM(:,:,frames);
-        Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames);
-        Segment(s).m     = Trial(1).Segment(s).m;
-        Segment(s).rCs   = Trial(1).Segment(s).rCs;
-        Segment(s).Is    = Trial(1).Segment(s).Is;
+    
+% Implant on the RIGHT side
+if strcmp(Participant.implantSide, 'right')
+    frames = Trial(1).Event(1).value(2):Trial(1).Event(1).value(3);
+    n      = length(frames);
+
+
+    
+    for s = 1:5
+        if s == 1
+            Segment(s).rM    = [];
+            Segment(s).Q(1:3,:,:) = [ones(1,1,n);zeros(2,1,n)]; % X axis of ICS
+            Segment(s).Q(4:6,:,:) = Trial(1).Segment(s).Q(4:6,:,frames);
+            Segment(s).Q(7:9,:,:) = zeros(3,1,n); % Origin of ICS
+            Segment(s).Q(10:12,:,:) = [zeros(2,1,n);ones(1,1,n)]; % Z axis of ICS
+            Segment(s).m     = [];
+            Segment(s).rCs   = [];
+            Segment(s).Is    = [];
+        else
+            Segment(s).rM    = Trial(1).Segment(s).rM(:,:,frames);
+            Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames);
+            Segment(s).m     = Trial(1).Segment(s).m;
+            Segment(s).rCs   = Trial(1).Segment(s).rCs;
+            Segment(s).Is    = Trial(1).Segment(s).Is;
+        end
     end
-end
-for j = 1:4
-    if j == 1
-        Joint(j).F     = Trial(1).Joint(j).F(:,:,frames);
-        Joint(j).M     = Trial(1).Joint(j).M(:,:,frames);
-    else
-        Joint(j).F     = [];
-        Joint(j).M     = [];
+    for j = 1:4
+        if j == 1
+            Joint(j).F     = Trial(1).Joint(j).F(:,:,frames);
+            Joint(j).M     = Trial(1).Joint(j).M(:,:,frames);
+        else
+            Joint(j).F     = [];
+            Joint(j).M     = [];
+        end
     end
+    Main_Segment_Visualisation_Right(Segment,1:length(Segment(2).Q));
+
+% Implant on the LEFT side
+elseif strcmp(Participant.implantSide, 'left')
+    frames = Trial(1).Event(2).value(2):Trial(1).Event(2).value(3);
+    n      = length(frames);
+
+
+    for s = 6:10
+        if s == 6
+            Segment(s-5).rM    = [];
+            Segment(s-5).Q(1:3,:,:) = [ones(1,1,n);zeros(2,1,n)]; % X axis of ICS
+            Segment(s-5).Q(4:6,:,:) = Trial(1).Segment(s).Q(4:6,:,frames);
+            Segment(s-5).Q(7:9,:,:) = zeros(3,1,n); % Origin of ICS
+            Segment(s-5).Q(10:12,:,:) = [zeros(2,1,n);ones(1,1,n)]; % Z axis of ICS
+           
+            Segment(s-5).m     = [];
+            Segment(s-5).rCs   = [];
+            Segment(s-5).Is    = [];
+        else
+            Segment(s-5).rM    = Trial(1).Segment(s).rM(:,:,frames);
+            Segment(s-5).Q     = Trial(1).Segment(s).Q(:,:,frames);
+            Segment(s-5).m     = Trial(1).Segment(s).m;
+            Segment(s-5).rCs   = Trial(1).Segment(s).rCs;
+            Segment(s-5).Is    = Trial(1).Segment(s).Is;
+        end
+    end
+    for j = 5:8
+        if j == 5
+            Joint(j-4).F     = Trial(1).Joint(j).F(:,:,frames);
+            Joint(j-4).M     = Trial(1).Joint(j).M(:,:,frames);
+        else
+            Joint(j-4).F     = [];
+            Joint(j-4).M     = [];
+        end
+    end
+    Main_Segment_Visualisation_Left(Segment,1:length(Segment(2).Q));
+    
+    [Segment,Joint] = Change_L2R(Segment,Joint);
+%     for s = 6:10
+%         Segment(s) = Change_L2R(Segment(s),Joint(s));
+%     end
+%     for s = 5:8
+%         Joint(s)   = Change_L2R(Segment(s),Joint(s));
+%     end
+
 end
-Main_Segment_Visualisation_Right(Segment,1:length(Segment(2).Q));
-% % Left
-% frames  = Trial(1).Event(2).value(2):Trial(1).Event(2).value(3);
-% for s = 6:10
-%     if s == 6
-%         Segment(s).rM    = [];  
-%         Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames); 
-%         Segment(s).m     = [];
-%         Segment(s).rCs   = [];
-%         Segment(s).Is    = [];    
-%     else
-%         Segment(s).rM    = Trial(1).Segment(s).rM(:,:,frames);
-%         Segment(s).Q     = Trial(1).Segment(s).Q(:,:,frames);
-%         Segment(s).m     = Trial(1).Segment(s).m;
-%         Segment(s).rCs   = Trial(1).Segment(s).rCs;
-%         Segment(s).Is    = Trial(1).Segment(s).Is;
-%     end
-% end
-% for j = 5:9
-%     if j == 1
-%         Joint(j).F     = Trial(1).Joint(j).F(:,:,frames);
-%         Joint(j).M     = Trial(1).Joint(j).M(:,:,frames);
-%     else
-%         Joint(j).F     = [];
-%         Joint(j).M     = [];
-%     end
-% end
-% Main_Segment_Visualisation_Left(Segment,1:length(Segment(7).Q));
+
 
 % -------------------------------------------------------------------------
 % DATA EXTRACTION as .mat file for the MSK_TLEM2_UHS_Min_f model
