@@ -32,6 +32,7 @@ function [] = Main_Segment_Visualisation_Left(Segment,frames)
 figure;
 hold on;
 axis equal;
+title('Left Visualisation')
 
 % ICS
 quiver3(0,0,0,1,0,0,0.5,'k');
@@ -39,7 +40,7 @@ quiver3(0,0,0,0,1,0,0.5,'k');
 quiver3(0,0,0,0,0,1,0.5,'k');
 
 % Frames of interest
-n = length(Segment(2).rM(1,1,:));
+n = length(Segment(7).rM(1,1,:));
 ni = frames;
 
 % Forceplate (or wheel)

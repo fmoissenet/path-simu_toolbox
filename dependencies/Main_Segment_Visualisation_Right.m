@@ -32,6 +32,7 @@ function [] = Main_Segment_Visualisation_Right(Segment,frames)
 figure;
 hold on;
 axis equal;
+title('Right Visualisation')
 
 % ICS
 quiver3(0,0,0,1,0,0,0.5,'k');
