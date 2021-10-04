@@ -245,7 +245,7 @@ Trial.Vmarker(6).label             = 'LAJC';
 Trial.Vmarker(6).Trajectory.smooth = LAJC;
 % Tibia/fibula axes (Dumas and Wojtusch 2018)
 Y8 = Vnorm_array3(LKJC-LAJC);
-X8 = Vnorm_array3(cross(LANK-LKJC,LMED-LKJC));
+X8 = -Vnorm_array3(cross(LANK-LKJC,LMED-LKJC));
 Z8 = Vnorm_array3(cross(X8,Y8));
 % Tibia/fibula parameters (Dumas and Chèze 2007)
 rP8                 = LKJC;
@@ -270,7 +270,7 @@ Trial.Vmarker(5).label             = 'LMJC';
 Trial.Vmarker(5).Trajectory.smooth = LMJC;
 % Foot axes (Dumas and Wojtusch 2018)
 X7 = Vnorm_array3(LMJC-LHEE);
-Y7 = Vnorm_array3(cross(LMET-LHEE,LTOE-LHEE));
+Y7 = -Vnorm_array3(cross(LMET-LHEE,LTOE-LHEE));
 Z7 = Vnorm_array3(cross(X7,Y7));
 % Foot parameters (Dumas and Chèze 2007)
 rP7                 = LAJC;
